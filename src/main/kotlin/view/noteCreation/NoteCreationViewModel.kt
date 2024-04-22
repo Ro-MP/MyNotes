@@ -1,59 +1,103 @@
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import data.ListOfNotes
 import kotlinx.coroutines.*
-import view.noteCreation.NoteCreationState
-import kotlin.properties.Delegates
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 
-class NoteCreationViewModel() {
+class NoteCreationViewModel {
 
-    private val _state = NoteCreationState()
     private val _notesModel = ListOfNotes
     private val _coroutineScope = MainScope()
+
+    private var _title: MutableStateFlow<String> = MutableStateFlow("")
+    val title: StateFlow<String>
+        get() = _title
+
+    private var _type: MutableStateFlow<NoteType> = MutableStateFlow(NoteType.GENERAL)
+    val type: StateFlow<NoteType>
+        get() = _type
+
+    private var _message: MutableStateFlow<String> = MutableStateFlow("")
+    val message: StateFlow<String>
+        get() = _message
+
+    private var _isButtonEnabled = MutableStateFlow(false)
+    val isButtonEnabled: StateFlow<Boolean>
+        get() = _isButtonEnabled
+
     var notes = SnapshotStateList<Note>()
 
-    val title : MutableState<String>
-        get() = _state.title
-    val description : MutableState<String>
-        get() = _state.message
-    val type : MutableState<NoteType>
-        get() = _state.type
-    val areButtonsEnable: MutableState<Boolean>
-        get() = _state.isButtonEnabled
 
+    init {
+        onSetButtonEnabled()
+    }
 
     fun createNote() {
         _coroutineScope.launch {
             onNoteCreation()
             resetValues()
         }
-        getNotes()
-    }
-
-    fun resetValues() {
-        _state.resetValues()
+//        getNotes()
     }
 
     fun cancelNote() {
         resetValues()
     }
 
-    fun getNotes() {
+    private fun onSetButtonEnabled() {
+        _coroutineScope.launch{
+            _title.combine(_message){ title, message ->
+                title.isNotEmpty() && message.isNotEmpty()
+            }.collect {
+                _isButtonEnabled.value = it
+            }
+        }
+
+
+    }
+
+
+    fun resetValues() {
+        _title.value = ""
+        _message.value = ""
+        _type.value = NoteType.GENERAL
+    }
+
+    fun changeTitle(title: String) {
+        _title.value = title
+    }
+
+    fun changeMessage(message: String) {
+        _message.value = message
+    }
+
+    fun changeType(type: NoteType) {
+        _type.value = type
+    }
+
+    private fun getNotes() {
         _coroutineScope.launch {
-            notes = async{ onGettingNotes() }.await()
+            withContext(Dispatchers.Default) { onGettingNotes() }.collect {
+                 notes.removeAll { true }
+                notes.addAll(it)
+            }
         }
     }
 
     private suspend fun onNoteCreation() = withContext(Dispatchers.IO){
-        _notesModel.addElement(
-            Note(title = _state.title.value,
-                description = _state.message.value,
-                type = _state.type.value
-            )
+        val note = Note(title = _title.value,
+            description = _message.value,
+            type = _type.value
         )
+        launch {
+            _notesModel.addElement(note)
+        }
+        notes.add(note)
     }
-
-    suspend fun onGettingNotes() = withContext(Dispatchers.IO){
+//
+    private suspend fun onGettingNotes() = withContext(Dispatchers.IO){
         _notesModel.getList()
     }
 

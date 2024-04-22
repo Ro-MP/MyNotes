@@ -1,21 +1,21 @@
 package data
 
 import Note
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 
 object ListOfNotes {
-    private val _listOfNotes = mutableStateListOf<Note>()
+    private val _listOfNotes = MutableStateFlow<MutableList<Note>>(mutableListOf())
 
-    suspend fun getList(): SnapshotStateList<Note> {
+    suspend fun getList(): MutableStateFlow<MutableList<Note>> {
         delay(3000)
         return _listOfNotes
     }
 
     suspend fun addElement(note: Note){
         delay(1000)
-        _listOfNotes.add(note)
+        _listOfNotes.value.add(note)
     }
 
 }

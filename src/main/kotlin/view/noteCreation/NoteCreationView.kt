@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -17,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.awt.Image
 
 
 @Composable
@@ -24,50 +29,67 @@ fun NoteCreation() {
 
     val viewModel = NoteCreationViewModel()
 
-    Column {
-        with(viewModel){
-            TextField(text =  title)
-            TextField(text = description)
+    with(viewModel) {
+        val areButtonsEnable = isButtonEnabled.collectAsState()
+        val title = title.collectAsState()
+        val message = message.collectAsState()
+        val type  = type.collectAsState()
+        val notesList = notes
+
+        Column {
+            TextField(
+                text =  title,
+                onTextChanged = ::changeTitle,
+                maxLines = 1
+            )
+            TextField(
+                text = message,
+                onTextChanged = ::changeMessage
+            )
             Spacer(Modifier.height(8.dp))
-            TypeDropdownMenu(type)
+            TypeDropdownMenu(
+                selectedType = type,
+                onChangedType = ::changeType
+            )
 
             Spacer(Modifier.height(8.dp))
             SetButtons(
-                areButtonsEnable,
-                { createNote() },
-                { cancelNote() }
+                isButtonEnabled = areButtonsEnable,
+                onCreateNote = ::createNote,
+                onCancelNote = ::cancelNote
             )
 
             Spacer(Modifier.height(16.dp))
-            ListOfNotes(notes)
+            ListOfNotes(notesList)
         }
     }
+
 
 }
 
 
 @Composable
-fun TextField(text: MutableState<String>){
+fun TextField(
+    text: State<String>,
+    onTextChanged: (String) -> Unit,
+    maxLines: Int = 3
+){
     OutlinedTextField(
         value = text.value,
         onValueChange = { newText ->
-            text.value = newText
+            onTextChanged(newText)
         },
-//        modifier = Modifier.keyInputFilter {
-//            if (it.key.keyCode == 8) {
-//                if (it.type == KeyEventType.KeyUp) text.value = text.value.dropLast(1)
-//                true
-//            } else {
-//                false
-//            }
-//        }
+        maxLines = maxLines
     )
 }
 
 
 
 @Composable
-fun TypeDropdownMenu(selectedType: MutableState<NoteType>){
+fun TypeDropdownMenu(
+    selectedType: State<NoteType>,
+    onChangedType: (NoteType) -> Unit
+){
     var isExpanded by remember { mutableStateOf(false) }
     val noteTypes = NoteType.values()
 
@@ -89,7 +111,7 @@ fun TypeDropdownMenu(selectedType: MutableState<NoteType>){
         ) {
             noteTypes.forEachIndexed { index, noteType ->
                 DropdownMenuItem(onClick = {
-                    selectedType.value = noteTypes[index]
+                    onChangedType(noteTypes[index])
                     isExpanded = false
                 }) {
                     Text(text = noteType.toString() )
@@ -101,7 +123,7 @@ fun TypeDropdownMenu(selectedType: MutableState<NoteType>){
 
 @Composable
 fun SetButtons(
-    isButtonEnabled: MutableState<Boolean>,
+    isButtonEnabled: State<Boolean>,
     onCreateNote: () -> Unit,
     onCancelNote: () -> Unit
 ){
