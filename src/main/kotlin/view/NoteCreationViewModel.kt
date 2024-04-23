@@ -1,12 +1,13 @@
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import data.ListOfNotes
+import data.remote.CoffeeAPI
+import data.remote.CoffeeService
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 
 class NoteCreationViewModel {
+
+    val coffeeService = CoffeeService()
 
     private val _notesModel = ListOfNotes
     private val _coroutineScope = MainScope()
@@ -28,23 +29,35 @@ class NoteCreationViewModel {
         get() = _isButtonEnabled
 
     var notes = SnapshotStateList<Note>()
+    var coffees = SnapshotStateList<CoffeeAPI>()
 
 
     init {
         onSetButtonEnabled()
+        getCoffees()
     }
 
     fun createNote() {
         _coroutineScope.launch {
             onNoteCreation()
             resetValues()
+
         }
-//        getNotes()
     }
 
     fun cancelNote() {
         resetValues()
     }
+
+    fun getCoffees() {
+        _coroutineScope.launch {
+            coffeeService.getHotCoffeeList()
+                .collect {
+                    coffees.addAll(it)
+                }
+        }
+    }
+
 
     private fun onSetButtonEnabled() {
         _coroutineScope.launch{
@@ -59,7 +72,7 @@ class NoteCreationViewModel {
     }
 
 
-    fun resetValues() {
+    private fun resetValues() {
         _title.value = ""
         _message.value = ""
         _type.value = NoteType.GENERAL

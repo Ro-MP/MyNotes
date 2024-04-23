@@ -3,7 +3,6 @@ package data
 import Note
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 
 object ListOfNotes {
     private val _listOfNotes = MutableStateFlow<MutableList<Note>>(mutableListOf())

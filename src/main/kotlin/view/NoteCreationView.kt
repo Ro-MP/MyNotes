@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.materialIcon
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -21,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import data.remote.CoffeeAPI
 import java.awt.Image
 
 
@@ -35,33 +32,55 @@ fun NoteCreation() {
         val message = message.collectAsState()
         val type  = type.collectAsState()
         val notesList = notes
+        val coffeeList: SnapshotStateList<CoffeeAPI> = coffees
 
-        Column {
-            TextField(
-                text =  title,
-                onTextChanged = ::changeTitle,
-                maxLines = 1
-            )
-            TextField(
-                text = message,
-                onTextChanged = ::changeMessage
-            )
-            Spacer(Modifier.height(8.dp))
-            TypeDropdownMenu(
-                selectedType = type,
-                onChangedType = ::changeType
-            )
+        Row {
+            Column {
+                TextField(
+                    text =  title,
+                    onTextChanged = ::changeTitle,
+                    maxLines = 1
+                )
+                TextField(
+                    text = message,
+                    onTextChanged = ::changeMessage
+                )
+                Spacer(Modifier.height(8.dp))
+                TypeDropdownMenu(
+                    selectedType = type,
+                    onChangedType = ::changeType
+                )
 
-            Spacer(Modifier.height(8.dp))
-            SetButtons(
-                isButtonEnabled = areButtonsEnable,
-                onCreateNote = ::createNote,
-                onCancelNote = ::cancelNote
-            )
+                Spacer(Modifier.height(8.dp))
+                SetButtons(
+                    isButtonEnabled = areButtonsEnable,
+                    onCreateNote = ::createNote,
+                    onCancelNote = ::cancelNote
+                )
 
-            Spacer(Modifier.height(16.dp))
-            ListOfNotes(notesList)
+                Spacer(Modifier.height(16.dp))
+                ListOfNotes(notesList)
+            }
+            LazyColumn {
+                items(
+                    items = coffeeList,
+                    itemContent = { item ->
+                        Text(
+                            text = item.title,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = item.id.toString()
+                        )
+                        Text(
+                            text = item.description
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                )
+            }
         }
+
     }
 
 
