@@ -1,7 +1,6 @@
-import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 
 @InternalCoroutinesApi
@@ -9,16 +8,16 @@ fun main(): Unit = runBlocking {
 
     val flow = flow {
         emit(1)
-        kotlinx.coroutines.delay(2000)
+        delay(1000)
         emit(2)
-        kotlinx.coroutines.delay(2000)
+        delay(1000)
         emit(3)
-        kotlinx.coroutines.delay(1000)
+        delay(500)
     }.transform {
         if (it%2 == 0) emit(it*10)
         else emit(it)
     }
-    kotlinx.coroutines.delay(2000)
+    delay(1000)
 
     launch {
         flow.collect {
@@ -44,6 +43,56 @@ fun main(): Unit = runBlocking {
     }.collect {
         println(it)
     }
+
+
+
+    /**
+     * >>> ShareFlow
+     */
+
+    val shared = MutableSharedFlow<Int>(
+        replay = 3,  // Cuantos valores se quiere almacenar
+        extraBufferCapacity = 2,  // Valores extra que se continuan emitiendo hasta 1ue se empiecen a recolectar los del replay
+        onBufferOverflow = BufferOverflow.DROP_OLDEST  // Decide que hacer con los valores extra
+    )
+    suspend fun updateShared() {
+        var count = 0
+        while (count < 6) {
+            delay(500)
+            count++
+            shared.emit(count)
+        }
+    }
+
+    launch {
+        updateShared()
+    }
+
+    shared.map { " SharedFlow: $it " }.collect(::println)
+
+    /**
+     * >>> StateFlow
+     */
+
+    val state = MutableStateFlow(0)
+
+    suspend fun updateState() {
+        var count = 0
+        while (count < 6) {
+            delay(500)
+            count++
+            state.value = count
+        }
+    }
+
+    launch {
+        updateState()
+    }
+    delay(2000)
+
+    state.map { " StateFlow: $it " }.collect(::println)
+
+
 
 }
 

@@ -7,7 +7,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import java.lang.Exception
 
 class CoffeeService {
@@ -18,14 +18,19 @@ class CoffeeService {
         }
     }
 
-    suspend fun getHotCoffeeList(): Flow<List<CoffeeAPI>> {
+    suspend fun getHotCoffeeList(): Flow<CoffeeAPI> {
         val hotCoffeeResponse: List<CoffeeAPI> = try {
              client.get(URL).body()
         } catch (e: Exception) {
             println(e.message)
             listOf()
         }
-        return flowOf(hotCoffeeResponse)
+        return flow {
+            hotCoffeeResponse.forEach {
+                kotlinx.coroutines.delay(500)
+                emit(it)
+            }
+        }
     }
 
 }

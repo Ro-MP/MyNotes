@@ -32,7 +32,7 @@ fun NoteCreation() {
         val message = message.collectAsState()
         val type  = type.collectAsState()
         val notesList = notes
-        val coffeeList: SnapshotStateList<CoffeeAPI> = coffees
+        val coffeeList = coffees
 
         Row {
             Column {
@@ -61,24 +61,8 @@ fun NoteCreation() {
                 Spacer(Modifier.height(16.dp))
                 ListOfNotes(notesList)
             }
-            LazyColumn {
-                items(
-                    items = coffeeList,
-                    itemContent = { item ->
-                        Text(
-                            text = item.title,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = item.id.toString()
-                        )
-                        Text(
-                            text = item.description
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-                )
-            }
+            Spacer(Modifier.width(16.dp))
+            PrintCoffees(coffeeList)
         }
 
     }
@@ -183,5 +167,27 @@ fun ListOfNotes(list: SnapshotStateList<Note>){
             }
         )
 
+    }
+}
+
+@Composable
+fun PrintCoffees(coffeeList: SnapshotStateList<CoffeeAPI>) {
+    LazyColumn {
+        items(
+            items = coffeeList,
+            itemContent = { item ->
+                Text(
+                    text = item.title,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = item.id.toString()
+                )
+                Text(
+                    text = item.description
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+        )
     }
 }

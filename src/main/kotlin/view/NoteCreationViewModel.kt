@@ -53,7 +53,7 @@ class NoteCreationViewModel {
         _coroutineScope.launch {
             coffeeService.getHotCoffeeList()
                 .collect {
-                    coffees.addAll(it)
+                    coffees.add(it)
                 }
         }
     }
