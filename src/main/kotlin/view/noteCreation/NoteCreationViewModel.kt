@@ -1,7 +1,11 @@
+package view.noteCreation
+
+import data.notes.Note
+import data.notes.NoteType
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import data.ListOfNotes
-import data.remote.CoffeeAPI
-import data.remote.CoffeeService
+import data.Coffee.CoffeeAPI
+import data.Coffee.CoffeeService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -100,7 +104,8 @@ class NoteCreationViewModel {
     }
 
     private suspend fun onNoteCreation() = withContext(Dispatchers.IO){
-        val note = Note(title = _title.value,
+        val note = Note(
+            title = _title.value,
             description = _message.value,
             type = _type.value
         )

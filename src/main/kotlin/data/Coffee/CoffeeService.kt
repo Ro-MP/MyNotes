@@ -1,4 +1,4 @@
-package data.remote
+package data.Coffee
 
 import io.ktor.client.*
 import io.ktor.client.call.*

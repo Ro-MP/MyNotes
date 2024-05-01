@@ -1,8 +1,7 @@
 package view.noteCreation
 
-import Note
-import NoteCreationViewModel
-import NoteType
+import data.notes.Note
+import data.notes.NoteType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,12 +16,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import data.remote.CoffeeAPI
-import java.awt.Image
-
+import data.Coffee.CoffeeAPI
 
 @Composable
-fun NoteCreation() {
+fun NoteCreationWindow() {
+    Scaffold(
+        topBar = { TopBar() }
+    ) { padding ->
+        NoteCreation(padding)
+    }
+
+}
+
+@Composable
+fun NoteCreation(paddingValues: PaddingValues) {
 
     val viewModel = NoteCreationViewModel()
 
@@ -30,14 +37,16 @@ fun NoteCreation() {
         val areButtonsEnable = isButtonEnabled.collectAsState()
         val title = title.collectAsState()
         val message = message.collectAsState()
-        val type  = type.collectAsState()
+        val type = type.collectAsState()
         val notesList = notes
         val coffeeList = coffees
 
-        Row {
+        Row(
+            modifier = Modifier.padding(paddingValues)
+        ) {
             Column {
                 TextField(
-                    text =  title,
+                    text = title,
                     onTextChanged = ::changeTitle,
                     maxLines = 1
                 )
@@ -76,7 +85,7 @@ fun TextField(
     text: State<String>,
     onTextChanged: (String) -> Unit,
     maxLines: Int = 3
-){
+) {
     OutlinedTextField(
         value = text.value,
         onValueChange = { newText ->
@@ -87,12 +96,11 @@ fun TextField(
 }
 
 
-
 @Composable
 fun TypeDropdownMenu(
     selectedType: State<NoteType>,
     onChangedType: (NoteType) -> Unit
-){
+) {
     var isExpanded by remember { mutableStateOf(false) }
     val noteTypes = NoteType.values()
 
@@ -117,7 +125,7 @@ fun TypeDropdownMenu(
                     onChangedType(noteTypes[index])
                     isExpanded = false
                 }) {
-                    Text(text = noteType.toString() )
+                    Text(text = noteType.toString())
                 }
             }
         }
@@ -129,7 +137,7 @@ fun SetButtons(
     isButtonEnabled: State<Boolean>,
     onCreateNote: () -> Unit,
     onCancelNote: () -> Unit
-){
+) {
     Row {
         OutlinedButton(
             onClick = onCancelNote,
@@ -141,14 +149,14 @@ fun SetButtons(
             onClick = onCreateNote,
             enabled = isButtonEnabled.value
         ) {
-            Text("Add Note")
+            Text("Add data.notes.Note")
         }
     }
 }
 
 @Composable
-fun ListOfNotes(list: SnapshotStateList<Note>){
-    LazyColumn{
+fun ListOfNotes(list: SnapshotStateList<Note>) {
+    LazyColumn {
         items(
             items = list,
             itemContent = { item ->

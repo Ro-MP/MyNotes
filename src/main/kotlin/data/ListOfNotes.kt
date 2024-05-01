@@ -1,6 +1,6 @@
 package data
 
-import Note
+import data.notes.Note
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 
