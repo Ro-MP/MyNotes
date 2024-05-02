@@ -32,7 +32,10 @@ class NoteCreationViewModel {
     val isButtonEnabled: StateFlow<Boolean>
         get() = _isButtonEnabled
 
-    var notes = SnapshotStateList<Note>()
+    private var noteFilter: NoteTypeFilter = NoteTypeFilter.All
+
+    private var notes = mutableListOf<Note>()
+    var filteredNotes = SnapshotStateList<Note>()
     var coffees = SnapshotStateList<CoffeeAPI>()
 
 
@@ -113,10 +116,17 @@ class NoteCreationViewModel {
             _notesModel.addElement(note)
         }
         notes.add(note)
+        filterNotes(noteFilter)
     }
 //
     private suspend fun onGettingNotes() = withContext(Dispatchers.IO){
         _notesModel.getList()
+    }
+
+    fun filterNotes(noteFilter: NoteTypeFilter){
+        filteredNotes.removeAll { true }
+        filteredNotes.addAll(noteFilter.filter(notes))
+        this.noteFilter = noteFilter
     }
 
     fun finish() {
