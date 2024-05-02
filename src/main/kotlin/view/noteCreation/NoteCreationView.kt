@@ -20,16 +20,21 @@ import data.Coffee.CoffeeAPI
 
 @Composable
 fun NoteCreationWindow() {
+    val typeFilter: MutableState<NoteTypeFilter> = remember { mutableStateOf( NoteTypeFilter.All() ) }
+
     Scaffold(
-        topBar = { TopBar() }
+        topBar = { TopBar(typeFilter) }
     ) { padding ->
-        NoteCreation(padding)
+        NoteCreation(padding, typeFilter)
     }
 
 }
 
 @Composable
-fun NoteCreation(paddingValues: PaddingValues) {
+fun NoteCreation(
+    paddingValues: PaddingValues,
+    typeFilter: MutableState<NoteTypeFilter>
+) {
 
     val viewModel = NoteCreationViewModel()
 
@@ -68,7 +73,7 @@ fun NoteCreation(paddingValues: PaddingValues) {
                 )
 
                 Spacer(Modifier.height(16.dp))
-                ListOfNotes(notesList)
+                ListOfNotes(notesList, typeFilter)
             }
             Spacer(Modifier.width(16.dp))
             PrintCoffees(coffeeList)
@@ -155,10 +160,10 @@ fun SetButtons(
 }
 
 @Composable
-fun ListOfNotes(list: SnapshotStateList<Note>) {
+fun ListOfNotes(list: SnapshotStateList<Note>, typeFilter: MutableState<NoteTypeFilter>) {
     LazyColumn {
         items(
-            items = list,
+            items = typeFilter.value.filter(list),
             itemContent = { item ->
                 Text(
                     text = item.title,

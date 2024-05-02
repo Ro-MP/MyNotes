@@ -7,14 +7,14 @@ import androidx.compose.runtime.*
 import data.notes.NoteType
 
 @Composable
-fun TopBar() {
+fun TopBar(typeFilter: MutableState<NoteTypeFilter>) {
     TopAppBar(
         title = { Text("My Notes") },
         actions = {
             var isMenuExpanded by remember { mutableStateOf(false) }
             IconButton(
                 onClick = { isMenuExpanded = !isMenuExpanded }
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.List,
                     contentDescription = "Filter"
@@ -23,11 +23,18 @@ fun TopBar() {
                     expanded = isMenuExpanded,
                     onDismissRequest = { isMenuExpanded = false }
                 ) {
-                    DropdownMenuItem(onClick = { isMenuExpanded = false }){
+                    DropdownMenuItem(onClick = {
+                        isMenuExpanded = false
+                        typeFilter.value = NoteTypeFilter.All()
+                    }) {
                         Text("ALL")
                     }
                     NoteType.values().forEach { noteType ->
-                        DropdownMenuItem(onClick = {isMenuExpanded = false}){
+                        DropdownMenuItem(onClick = {
+                            isMenuExpanded = false
+
+                            typeFilter.value = typeFilter.value.getNoteTypeFilterFromNoteTypeEnum(noteType)
+                        }) {
                             Text(noteType.name)
                         }
                     }
@@ -36,3 +43,4 @@ fun TopBar() {
         }
     )
 }
+
