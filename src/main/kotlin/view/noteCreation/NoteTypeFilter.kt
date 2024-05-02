@@ -3,43 +3,29 @@ package view.noteCreation
 import data.notes.Note
 import data.notes.NoteType
 
-sealed interface NoteTypeFilter{
-    class All : NoteTypeFilter {
-        val tag = "All"
-    }
+sealed interface NoteTypeFilter {
 
-    class General : NoteTypeFilter {
-        val tag = "General"
-    }
+    fun filter(list: List<Note>): List<Note>
 
-    class ToDo : NoteTypeFilter {
-        val tag = "To do"
-    }
 
-    class Reminder : NoteTypeFilter {
-        val tag = "Reminder"
-    }
-
-    class Event : NoteTypeFilter {
-        val tag = "Event"
-    }
-
-    fun filter(list: List<Note>): List<Note> {
-        return when (this) {
-            is All -> list
-            is Event -> list.filter { it.type == NoteType.EVENT }
-            is General -> list.filter { it.type == NoteType.GENERAL }
-            is Reminder -> list.filter { it.type == NoteType.REMINDER }
-            is ToDo -> list.filter { it.type == NoteType.TODO }
+    object All : NoteTypeFilter {
+        override fun filter(list: List<Note>): List<Note> {
+            return list
         }
     }
 
-    fun getNoteTypeFilterFromNoteTypeEnum(noteType: NoteType): NoteTypeFilter {
-        return when (noteType) {
-            NoteType.GENERAL -> General()
-            NoteType.TODO -> ToDo()
-            NoteType.REMINDER -> Reminder()
-            NoteType.EVENT -> Event()
+    class ByType(private val noteType: NoteType) : NoteTypeFilter {
+
+        override fun filter(list: List<Note>): List<Note> {
+            return when (noteType) {
+                NoteType.EVENT -> list.filter { it.type == NoteType.EVENT }
+                NoteType.GENERAL -> list.filter { it.type == NoteType.GENERAL }
+                NoteType.TODO -> list.filter { it.type == NoteType.TODO }
+                NoteType.REMINDER -> list.filter { it.type == NoteType.REMINDER }
+            }
         }
     }
+
 }
+
+

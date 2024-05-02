@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import data.notes.NoteType
 
 @Composable
-fun TopBar(typeFilter: MutableState<NoteTypeFilter>) {
+fun TopBar(typeFilter: (NoteTypeFilter) -> Unit) {
     TopAppBar(
         title = { Text("My Notes") },
         actions = {
@@ -25,15 +25,14 @@ fun TopBar(typeFilter: MutableState<NoteTypeFilter>) {
                 ) {
                     DropdownMenuItem(onClick = {
                         isMenuExpanded = false
-                        typeFilter.value = NoteTypeFilter.All()
+                        typeFilter(NoteTypeFilter.All)
                     }) {
                         Text("ALL")
                     }
                     NoteType.values().forEach { noteType ->
                         DropdownMenuItem(onClick = {
                             isMenuExpanded = false
-
-                            typeFilter.value = typeFilter.value.getNoteTypeFilterFromNoteTypeEnum(noteType)
+                            typeFilter(NoteTypeFilter.ByType(noteType))
                         }) {
                             Text(noteType.name)
                         }
