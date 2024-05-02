@@ -114,7 +114,7 @@ fun TypeDropdownMenu(
         modifier = Modifier.wrapContentSize(Alignment.TopStart)
     ) {
         Text(
-            noteTypes[selectedType.value.ordinal].toString(),
+            noteTypes[selectedType.value.ordinal].tag,
             modifier = Modifier.clickable(
                 onClick = { isExpanded = true })
                 .background(Color.LightGray)
@@ -131,7 +131,7 @@ fun TypeDropdownMenu(
                     onChangedType(noteTypes[index])
                     isExpanded = false
                 }) {
-                    Text(text = noteType.toString())
+                    Text(text = noteType.tag)
                 }
             }
         }
@@ -155,7 +155,7 @@ fun SetButtons(
             onClick = onCreateNote,
             enabled = isButtonEnabled.value
         ) {
-            Text("Add data.notes.Note")
+            Text("Add")
         }
     }
 }
@@ -171,7 +171,7 @@ fun ListOfNotes(list: SnapshotStateList<Note>) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = item.type.toString()
+                    text = item.type.tag
                 )
                 Text(
                     text = item.description,

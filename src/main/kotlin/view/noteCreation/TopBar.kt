@@ -27,14 +27,14 @@ fun TopBar(typeFilter: (NoteTypeFilter) -> Unit) {
                         isMenuExpanded = false
                         typeFilter(NoteTypeFilter.All)
                     }) {
-                        Text("ALL")
+                        Text("All")
                     }
                     NoteType.values().forEach { noteType ->
                         DropdownMenuItem(onClick = {
                             isMenuExpanded = false
                             typeFilter(NoteTypeFilter.ByType(noteType))
                         }) {
-                            Text(noteType.name)
+                            Text(noteType.tag)
                         }
                     }
                 }
