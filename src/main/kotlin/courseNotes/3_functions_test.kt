@@ -1,6 +1,11 @@
 package courseNotes
 
+import kotlinx.coroutines.processNextEventInCurrentThread
+
 fun main() {
+
+    funcionLocalTest()
+
     /***
      *  Functions
      */
@@ -92,6 +97,21 @@ fun main() {
 
     str85?.let(::op)
         .also(::print)
+}
 
+/*
+        Funciones Locales
+        Son funciones dentro de funciones que pueden acceder al estado de la
+         funcion superior
+     */
 
+fun funcionLocalTest() {
+    val x = 10
+
+    fun interna(param: Int): Int{
+        return param + x
+    }
+
+    println("Funcion interna de 5: ${interna(5)}")
+    println("Funcion interna de 10: ${interna(10)}")
 }

@@ -3,10 +3,11 @@ package courseNotes
 fun main() {
     var p = "a" to 3
 
-    val lunch1 = "Rodrigo" eats "Tlacoyos"
+    val lunch1 = "Rodrigo".eats("Tlacoyos")
     lunch1.sayLunch()
 
     val lunch2 = "Nans" eats "Burgers"
+    lunch2.sayLunch()
 
 }
 
