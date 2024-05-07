@@ -24,8 +24,8 @@ private operator fun Food.plus(other: Food): Food{
 }
 
 private fun overloadingOperatorTest(){
-    val burguer = Food(
-        "Burguer",
+    val burger = Food(
+        "Burger",
         500,
         listOf("Bread", "Meet", "mayonnaise")
     )
@@ -36,8 +36,14 @@ private fun overloadingOperatorTest(){
         listOf("Sugar", "Tomato", "Garlic")
     )
 
-    val bbqBurguer = burguer + bbqSauce
-    bbqBurguer.print()
+    val frenchFries = Food(
+        "French fries",
+        150,
+        listOf("Potatoes", "Cheese", "Ketchup")
+    )
+
+    val bbqBurger = burger + bbqSauce + frenchFries
+    bbqBurger.print()
 }
 
 private fun Food.print() {
