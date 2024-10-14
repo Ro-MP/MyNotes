@@ -47,4 +47,8 @@ interface encriptable {
     - Generan soluciones para que sirvan distintos tipos de datos
     - <T : Any> Cualquier tipo no nulo
 
+    - in: genericos solo de entrada
+    - out: genericos solo de salida
+
+
  */
